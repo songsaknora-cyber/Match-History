@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Nora and Samen — Match History</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0d14;
+    --bg-alt: #0d111a;
+    --panel: #121722;
+    --card: #151b27;
+    --border: #232a3a;
+    --border-soft: #1a2130;
+    --text: #e9ecf4;
+    --text-dim: #8991a8;
+    --text-faint: #5c6478;
+    --nora: #4ef0c4;
+    --nora-dim: #2e8f79;
+    --samen: #ff3d81;
+    --samen-dim: #a3295a;
+    --danger: #ff5468;
+    --radius: 14px;
+    --radius-sm: 9px;
+    --shadow-glow: 0 0 0 1px rgba(78,240,196,0.15), 0 8px 30px rgba(0,0,0,0.45);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body{
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(78,240,196,0.06), transparent 40%),
+      radial-gradient(circle at 85% 10%, rgba(255,61,129,0.06), transparent 40%),
+      linear-gradient(var(--border-soft) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border-soft) 1px, transparent 1px);
+    background-size: auto, auto, 42px 42px, 42px 42px;
+    background-position: 0 0, 0 0, -1px -1px, -1px -1px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+  }
+
+  a, button{ font-family: inherit; }
+
+  /* ---------- Header ---------- */
+  header{
+    padding: 3rem 1.5rem 2rem;
+    text-align: center;
+    border-bottom: 1px solid var(--border-soft);
+  }
+
+  .eyebrow{
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.35em;
+    font-size: 0.68rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-bottom: 0.9rem;
+  }
+
+  .title-vs{
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.1rem, 6vw, 3.6rem);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: clamp(0.6rem, 2vw, 1.4rem);
+    text-transform: uppercase;
+  }
+
+  .title-vs .nora{ color: var(--nora); text-shadow: 0 0 22px rgba(78,240,196,0.35); }
+  .title-vs .samen{ color: var(--samen); text-shadow: 0 0 22px rgba(255,61,129,0.35); }
+  .title-vs .divider{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    color: var(--text-faint);
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    padding: 0.15rem 0.7rem;
+  }
+
+  .subtitle{
+    margin-top: 0.6rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+
+  /* ---------- Layout ---------- */
+  main{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 5rem;
+  }
+
+  /* ---------- Toolbar ---------- */
+  .toolbar{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0.5rem 0 1.6rem;
+  }
+
+  .scoreboard{
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .scoreboard .count{
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--nora);
+    text-shadow: 0 0 16px rgba(78,240,196,0.3);
+  }
+  .scoreboard .label{
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+  }
+
+  .controls{
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .field{
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.45rem 0.7rem;
+  }
+
+  .field label{
+    font-size: 0.7rem;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .field input[type="date"], .field select{
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+  }
+  .field input[type="date"]::-webkit-calendar-picker-indicator{ filter: invert(0.7); cursor: pointer; }
+
+  .clear-filter{
+    background: none; border: none; color: var(--text-faint);
+    cursor: pointer; font-size: 0.95rem; line-height: 1; padding: 0 0.1rem;
+  }
+  .clear-filter:hover{ color: var(--danger); }
+
+  .refresh-btn{
+    display: flex; align-items: center; gap: 0.4rem;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.5rem 0.85rem;
+    color: var(--text-dim);
+    font-size: 0.82rem;
+    font-family: 'JetBrains Mono', monospace;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+  .refresh-btn:hover{ border-color: var(--nora-dim); color: var(--text); }
+  .refresh-btn svg{ width: 14px; height: 14px; transition: transform 0.4s ease; }
+  .refresh-btn.spinning svg{ transform: rotate(360deg); }
+
+  .sync-note{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--text-faint);
+    text-align: center;
+    margin: -0.6rem 0 1.6rem;
+  }
+
+  /* ---------- Gallery ---------- */
+  .gallery{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.3rem;
+  }
+
+  .card{
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    animation: cardIn 0.35s ease both;
+  }
+
+  @keyframes cardIn{
+    from{ opacity: 0; transform: translateY(10px); }
+    to{ opacity: 1; transform: translateY(0); }
+  }
+
+  .card:hover{
+    transform: translateY(-4px);
+    border-color: var(--nora-dim);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .thumb-wrap{
+    position: relative;
+    aspect-ratio: 16/10;
+    overflow: hidden;
+    background: #05070c;
+    cursor: zoom-in;
+  }
+
+  .thumb-wrap img{
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+  .card:hover .thumb-wrap img{ transform: scale(1.06); }
+
+  .thumb-wrap::after{
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.55) 100%);
+    pointer-events: none;
+  }
+
+  .card-meta{
+    padding: 0.8rem 1rem 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .timestamp{
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.74rem;
+    color: var(--text-dim);
+    letter-spacing: 0.01em;
+  }
+  .timestamp .label{ color: var(--text-faint); margin-right: 0.35rem; }
+
+  .download-btn{
+    background: none; border: none; color: var(--text-faint);
+    cursor: pointer; display: flex; align-items: center; padding: 0.2rem;
+    transition: color 0.15s ease;
+    flex-shrink: 0;
+  }
+  .download-btn:hover{ color: var(--nora); }
+  .download-btn svg{ width: 15px; height: 15px; }
+
+  /* ---------- Empty / error states ---------- */
+  .empty-state{
+    text-align: center;
+    padding: 4.5rem 1.5rem;
+    color: var(--text-dim);
+  }
+  .empty-state .icon{
+    width: 56px; height: 56px;
+    margin: 0 auto 1.1rem;
+    opacity: 0.35;
+  }
+  .empty-state h3{
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 1.3rem;
+    color: var(--text);
+    margin: 0 0 0.4rem;
+    font-weight: 600;
+  }
+  .empty-state p{ margin: 0; font-size: 0.9rem; }
+  .empty-state code{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 0.15rem 0.4rem;
+    border-radius: 5px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82rem;
+  }
+
+  /* ---------- Lightbox ---------- */
+  .lightbox{
+    position: fixed; inset: 0;
+    background: rgba(4,6,10,0.92);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+    padding: 2rem;
+  }
+  .lightbox.open{ opacity: 1; pointer-events: auto; }
+
+  .lightbox img{
+    max-width: min(90vw, 1100px);
+    max-height: 84vh;
+    border-radius: 8px;
+    box-shadow: 0 20px 70px rgba(0,0,0,0.6), 0 0 0 1px var(--border);
+    transform: scale(0.97);
+    transition: transform 0.2s ease;
+  }
+  .lightbox.open img{ transform: scale(1); }
+
+  .lightbox-bar{
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    display: flex; gap: 0.6rem;
+  }
+
+  .lightbox-btn{
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: var(--text-dim);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .lightbox-btn:hover{ color: var(--text); border-color: var(--text-faint); }
+  .lightbox-btn.close-btn:hover{ background: var(--danger); border-color: var(--danger); color: #fff; }
+  .lightbox-btn svg{ width: 17px; height: 17px; }
+
+  .lightbox-caption{
+    position: absolute;
+    bottom: 2rem; left: 50%; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+    background: rgba(10,13,20,0.6);
+    padding: 0.5rem 1rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+  }
+
+  footer{
+    text-align: center;
+    padding: 2rem 1.5rem 3rem;
+    color: var(--text-faint);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 560px){
+    .toolbar{ flex-direction: column; align-items: stretch; }
+    .controls{ justify-content: space-between; }
+  }
+
+  :focus-visible{ outline: 2px solid var(--nora); outline-offset: 2px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Shared · Read-only · Synced from GitHub</div>
+  <div class="title-vs">
+    <span class="nora">Nora</span>
+    <span class="divider">VS</span>
+    <span class="samen">Samen</span>
+  </div>
+  <div class="subtitle">Match History</div>
+</header>
+
+<main>
+
+  <div class="toolbar">
+    <div class="scoreboard">
+      <span class="count" id="match-count">0</span>
+      <span class="label" id="match-label">Matches</span>
+    </div>
+    <div class="controls">
+      <div class="field">
+        <label for="date-filter">Date</label>
+        <input type="date" id="date-filter" />
+        <button class="clear-filter" id="clear-filter" title="Clear date filter" aria-label="Clear date filter">✕</button>
+      </div>
+      <div class="field">
+        <label for="sort-select">Sort</label>
+        <select id="sort-select">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+        </select>
+      </div>
+      <button class="refresh-btn" id="refresh-btn" title="Check for new screenshots">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <div class="sync-note" id="sync-note"></div>
+
+  <div class="gallery" id="gallery"></div>
+
+  <div class="empty-state" id="empty-state" style="display:none;">
+    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="m21 16-5.5-5.5L4 21"/></svg>
+    <h3 id="empty-title">No match history yet</h3>
+    <p id="empty-sub">Drop a screenshot into the <code>screenshots</code> folder and push.</p>
+  </div>
+
+</main>
+
+<footer>Screenshots live in this repository's <code>/screenshots</code> folder — add one with git, and this page updates for everyone with the link.</footer>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <div class="lightbox-bar">
+    <button class="lightbox-btn" id="lightbox-download" title="Download" aria-label="Download screenshot">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M12 15l-4-4M12 15l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+    </button>
+    <button class="lightbox-btn close-btn" id="lightbox-close" title="Close" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+  <img id="lightbox-img" src="" alt="Match screenshot" />
+  <div class="lightbox-caption" id="lightbox-caption"></div>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const MANIFEST_URL = "manifest.json";
+  const SCREENSHOTS_DIR = "screenshots";
+
+  let allRecords = [];
+  let sortMode = "newest";
+  let dateFilter = "";
+
+  const gallery = document.getElementById("gallery");
+  const emptyState = document.getElementById("empty-state");
+  const emptyTitle = document.getElementById("empty-title");
+  const emptySub = document.getElementById("empty-sub");
+  const matchCount = document.getElementById("match-count");
+  const matchLabel = document.getElementById("match-label");
+  const dateFilterInput = document.getElementById("date-filter");
+  const clearFilterBtn = document.getElementById("clear-filter");
+  const sortSelect = document.getElementById("sort-select");
+  const refreshBtn = document.getElementById("refresh-btn");
+  const syncNote = document.getElementById("sync-note");
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
+  const lightboxCaption = document.getElementById("lightbox-caption");
+  const lightboxClose = document.getElementById("lightbox-close");
+  const lightboxDownload = document.getElementById("lightbox-download");
+
+  function formatTimestamp(iso) {
+    const d = new Date(iso);
+    const datePart = d.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    const timePart = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+    return `${datePart} — ${timePart}`;
+  }
+
+  function isoDate(iso) {
+    const d = new Date(iso);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function imagePath(filename) {
+    return `${SCREENSHOTS_DIR}/${encodeURIComponent(filename)}`;
+  }
+
+  async function loadManifest() {
+    const res = await fetch(`${MANIFEST_URL}?t=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error(`Could not load manifest.json (${res.status})`);
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
+  }
+
+  function getVisibleRecords() {
+    let records = allRecords.slice();
+    if (dateFilter) {
+      records = records.filter((r) => isoDate(r.uploadedAt) === dateFilter);
+    }
+    records.sort((a, b) => {
+      const ta = new Date(a.uploadedAt).getTime();
+      const tb = new Date(b.uploadedAt).getTime();
+      return sortMode === "newest" ? tb - ta : ta - tb;
+    });
+    return records;
+  }
+
+  function render() {
+    gallery.innerHTML = "";
+    const visible = getVisibleRecords();
+
+    matchCount.textContent = allRecords.length;
+    matchLabel.textContent = allRecords.length === 1 ? "Match" : "Matches";
+
+    if (allRecords.length === 0) {
+      emptyState.style.display = "block";
+      emptyTitle.textContent = "No match history yet";
+      emptySub.innerHTML = `Drop a screenshot into the <code>screenshots</code> folder and push.`;
+      gallery.style.display = "none";
+      return;
+    }
+
+    if (visible.length === 0) {
+      emptyState.style.display = "block";
+      emptyTitle.textContent = "No screenshots on this date";
+      emptySub.innerHTML = "Try a different date or clear the filter.";
+      gallery.style.display = "none";
+      return;
+    }
+
+    emptyState.style.display = "none";
+    gallery.style.display = "grid";
+
+    visible.forEach((record) => {
+      const path = imagePath(record.file);
+
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const thumbWrap = document.createElement("div");
+      thumbWrap.className = "thumb-wrap";
+
+      const img = document.createElement("img");
+      img.src = path;
+      img.alt = record.file;
+      img.loading = "lazy";
+      thumbWrap.appendChild(img);
+      thumbWrap.addEventListener("click", () => openLightbox(record, path));
+
+      const meta = document.createElement("div");
+      meta.className = "card-meta";
+
+      const ts = document.createElement("div");
+      ts.className = "timestamp";
+      ts.innerHTML = `<span class="label">Uploaded:</span>${formatTimestamp(record.uploadedAt)}`;
+
+      const dlBtn = document.createElement("button");
+      dlBtn.className = "download-btn";
+      dlBtn.title = "Download screenshot";
+      dlBtn.setAttribute("aria-label", "Download screenshot");
+      dlBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M12 15l-4-4M12 15l4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>`;
+      dlBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        downloadRecord(record, path);
+      });
+
+      meta.appendChild(ts);
+      meta.appendChild(dlBtn);
+
+      card.appendChild(thumbWrap);
+      card.appendChild(meta);
+      gallery.appendChild(card);
+    });
+  }
+
+  function downloadRecord(record, path) {
+    const a = document.createElement("a");
+    a.href = path;
+    a.download = record.file;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  }
+
+  function openLightbox(record, path) {
+    lightboxImg.src = path;
+    lightboxCaption.textContent = `Uploaded: ${formatTimestamp(record.uploadedAt)}`;
+    lightbox.classList.add("open");
+    lightbox.setAttribute("aria-hidden", "false");
+    lightboxDownload.onclick = () => downloadRecord(record, path);
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLightbox() {
+    lightbox.classList.remove("open");
+    lightbox.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  async function refresh(showSpinner) {
+    if (showSpinner) refreshBtn.classList.add("spinning");
+    try {
+      allRecords = await loadManifest();
+      render();
+      syncNote.textContent = `Last checked: ${new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+    } catch (err) {
+      console.error(err);
+      syncNote.textContent = "Could not load manifest.json — has the repo been pushed with a screenshots folder?";
+    } finally {
+      if (showSpinner) setTimeout(() => refreshBtn.classList.remove("spinning"), 400);
+    }
+  }
+
+  dateFilterInput.addEventListener("change", (e) => { dateFilter = e.target.value; render(); });
+  clearFilterBtn.addEventListener("click", () => { dateFilterInput.value = ""; dateFilter = ""; render(); });
+  sortSelect.addEventListener("change", (e) => { sortMode = e.target.value; render(); });
+  refreshBtn.addEventListener("click", () => refresh(true));
+
+  lightboxClose.addEventListener("click", closeLightbox);
+  lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLightbox(); });
+
+  refresh(false);
+})();
+</script>
+
+</body>
+</html>
